@@ -3,7 +3,7 @@
 This repository contains the code used to extract out morphomety metrics for the
 reservoirs included in [paper link TBD].
 
-#Disclaimer:
+# Disclaimer:
 
 The United States Environmental Protection Agency (EPA) GitHub project code is
 provided on an "as is" basis and the user assumes responsibility for its use.
