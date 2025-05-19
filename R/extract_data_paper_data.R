@@ -155,21 +155,25 @@ sampled_volume <- filter(sampled_volumes, source == "sampled pts voronoi") |>
   select(lake_id, volume = values)
 
 surge_sites <- left_join(surge_sites_depth, sampled_volume) |>
+  mutate(littoral_fraction =
+           (1 - (1 - (2.5 / max_depth)^((max_depth / mean_depth) - 1))) * 100) |>
   mutate(source = "surge_sites") |>
   left_join(select(surge_res_morpho, lake_id, lake_name)) |>
-  pivot_longer(cols = mean_depth:volume, names_to = "variables",
+  pivot_longer(cols = mean_depth:littoral_fraction, names_to = "variables",
                values_to = "values")
 
 ################################################
 # Other morpho metrics
 ################################################
 surge_morpho <- surge_res_morpho |>
-  select(lake_id, lake_name, surfaceArea:shorelineDevelopment,maxWidth:maxLength, -fetch) |>
+  select(lake_id, lake_name, surfaceArea:shorelineDevelopment,
+         maxWidth:maxLength, -fetch) |>
   mutate(source = "surge_morpho") |>
   pivot_longer(cols = surfaceArea:maxLength, names_to = "variables",
                values_to = "values") |>
   bind_rows(surge_sites) |>
-  arrange(lake_id)
+  arrange(lake_id) |>
+  mutate(values = round(values, 2))
 
 write_csv(surge_morpho, here("data/surge_morpho.csv"))
 sessioninfo::session_info(to_file = "data_paper_session.txt")
